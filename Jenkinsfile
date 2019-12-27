@@ -322,8 +322,12 @@ pipeline {
                             }
                             steps {
                                 sh """
+                                    #docker run --name squid --rm -p 3128:3128 --volume /srv/docker/squid/cache:/var/spool/squid --volume squid.conf:/etc/squid/squid.conf sameersbn/squid
+                                    #docker run --name squid --rm --publish 3128:3128 --mount type=bind,source=sq,target=/etc/squid sameersbn/squid                                    
+                                    mkdir ~/squid || true
+                                    docker run --name squid -d -p 3128:3128 --volume ~/squid:/var/spool/squid datadog/squid
                                     rm -rf src/brave
-                                    npm run init
+                                    HTTP_PROXY=http://127.0.0.1:3128 HTTPS_PROXY=http://127.0.0.1:3128 npm run init
                                 """
                             }
                         }
